@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎡 Ruleta de desafíos — 18 de Tomas</title>
+<link href="https://fonts.googleapis.com/css2?family=New+Rocker&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #04060F; --void2: #090D1A; --void3: #111828; --void4: #1C2438;
+  --colour: #7B2FBE; --colour-bright: #B44FE8;
+  --star: #C4A882; --star-bright: #DFC49A; --parchment: #E8DCC8; --text-muted: #7A6E60;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--void); color: var(--parchment); font-family: 'Jost', sans-serif; min-height: 100vh; overflow-x: hidden; }
+#bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+  nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1rem 2rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  background: linear-gradient(to bottom, rgba(4,6,15,0.97), transparent);
+  }
+
+  .nav-back, .nav-logo {
+    color: var(--parchment);
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+.nav-back { justify-self: start; }
+.nav-logo { justify-self: center; }
+.nav-tools { justify-self: end; }
+  
+  .nav-back:hover { color: var(--star); }
+  .nav-logo:hover { color: var(--star); }
+.nav-tools { display: flex; gap: 0.5rem; }
+.icon-btn {
+  background: transparent; border: 1px solid rgba(196,168,130,0.25); color: var(--text-muted);
+  padding: 0.35rem 0.7rem; font-size: 0.75rem; cursor: pointer; font-family: 'Jost', sans-serif;
+  letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s;
+}
+.icon-btn:hover { border-color: var(--star); color: var(--star); }
+
+main { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 5.5rem 1.5rem 3rem; }
+.tag { font-size: 0.7rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--star); }
+h1 { font-family: 'New Rocker', system-ui; font-size: clamp(2rem, 5vw, 3.5rem); margin: 0.4rem 0 1.5rem; text-align: center; }
+
+.stage { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; width: 100%; }
+.wheel-wrap { position: relative; width: min(78vmin, 640px); aspect-ratio: 1; }
+#wheel { width: 100%; height: 100%; display: block; filter: drop-shadow(0 0 30px rgba(180,79,232,0.25)); }
+.pointer {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 2;
+  width: 0; height: 0; border-left: 18px solid transparent; border-right: 18px solid transparent;
+  border-top: 38px solid var(--star-bright); filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+}
+
+.controls { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 560px; }
+.name-input {
+  flex: 1; min-width: 200px; padding: 0.9rem 1.1rem; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(196,168,130,0.25); color: var(--parchment);
+  font-family: 'Jost', sans-serif; font-size: 1.1rem; outline: none; transition: border-color 0.2s;
+}
+.name-input:focus { border-color: var(--star); }
+.spin-btn {
+  padding: 0.9rem 2.2rem; background: linear-gradient(135deg, var(--colour), var(--colour-bright)); border: none; color: #fff;
+  font-family: 'New Rocker', system-ui; font-size: 1.2rem; letter-spacing: 0.1em; cursor: pointer; transition: transform 0.2s, opacity 0.2s;
+}
+.spin-btn:hover:not(:disabled) { transform: scale(1.04); }
+.spin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.remaining { font-size: 0.8rem; color: var(--text-muted); letter-spacing: 0.08em; text-align: center; }
+
+/* Panel de edición */
+.editor {
+  display: none; width: 100%; max-width: 560px; background: var(--void2);
+  border: 1px solid rgba(196,168,130,0.2); padding: 1.25rem; margin-top: 1rem;
+}
+.editor.open { display: block; }
+.editor h2 { font-family: 'New Rocker', system-ui; font-size: 1.1rem; color: var(--star); margin-bottom: 0.4rem; }
+.editor p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.5; }
+.editor textarea {
+  width: 100%; height: 220px; resize: vertical; padding: 0.8rem; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(196,168,130,0.2); color: var(--parchment); font-family: 'Jost', sans-serif; font-size: 0.9rem; line-height: 1.5; outline: none;
+}
+.editor textarea:focus { border-color: var(--star); }
+.editor-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; margin-top: 0.75rem; }
+.check { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--parchment); margin-top: 0.75rem; cursor: pointer; }
+
+/* Resultado */
+.result {
+  display: none; position: fixed; inset: 0; z-index: 500; background: rgba(4,6,15,0.94);
+  align-items: center; justify-content: center; flex-direction: column; gap: 1.2rem; padding: 2rem; text-align: center;
+}
+.result.open { display: flex; animation: fade 0.4s ease; }
+
+.upload-lock {
+  position: absolute;
+  inset: 0;        /* ← sacás el "0 2rem", que dejaba huecos */
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(4,6,15,0.88);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px dashed rgba(196,168,130,0.35);
+  text-align: center;
+  padding: 1.5rem;
+  cursor: not-allowed;
+}
+.upload-lock-icon { font-size: 2.5rem; }
+.upload-lock-title { font-family: 'New Rocker', system-ui; font-size: 1.1rem; color: var(--star); letter-spacing: 0.05em; }
+.upload-lock-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
+.numero-wrap {
+  width: 100%;
+  max-width: 560px;
+  text-align: center;
+  background: var(--void2);
+  border: 1px solid rgba(196,168,130,0.15);
+  border-top: 3px solid var(--colour-bright);
+  padding: 1.5rem 1.25rem 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.numero-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--star);
+  margin-bottom: 0.75rem;
+}
+
+.numero-display {
+  font-family: 'New Rocker', system-ui;
+  font-size: clamp(4rem, 15vw, 7rem);
+  color: var(--colour-bright);
+  line-height: 1;
+  margin-bottom: 0.75rem;
+  min-height: 1.1em;
+  transition: color 0.1s;
+  text-shadow: 0 0 40px rgba(180,79,232,0.4);
+}
+
+.numero-display.rolling { color: var(--star); }
+
+.numero-config {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.numero-btn {
+  padding: 0.7rem 2rem;
+  background: transparent;
+  border: 1px solid var(--colour-bright);
+  color: var(--colour-bright);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 1rem;
+}
+.numero-btn:hover:not(:disabled) { background: rgba(180,79,232,0.1); }
+.numero-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.numero-historial-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.numero-historial {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+  min-height: 1.5rem;
+}
+
+.numero-chip {
+  padding: 0.2rem 0.6rem;
+  background: rgba(123,47,190,0.15);
+  border: 1px solid rgba(123,47,190,0.3);
+  font-family: 'New Rocker', system-ui;
+  font-size: 0.9rem;
+  color: var(--colour-bright);
+}
+
+@keyframes fade { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+.result-name { font-family: 'New Rocker', system-ui; font-size: clamp(1.8rem, 5vw, 3.5rem); color: var(--colour-bright); }
+.result-label { font-size: 0.8rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--star); }
+.result-text { font-family: 'New Rocker', system-ui; font-size: clamp(1.6rem, 4.5vw, 3.2rem); max-width: 900px; line-height: 1.3; color: var(--parchment); }
+
+@media (max-width: 600px) {
+  nav {
+    grid-template-columns: auto 1fr auto;
+    padding: 0.6rem 1rem;
+    gap: 0.3rem;
+  }
+  .nav-logo { font-size: 0.8rem; }
+  .nav-tools { gap: 0.3rem; }
+  .icon-btn { font-size: 0.62rem; padding: 0.3rem 0.45rem; letter-spacing: 0.04em; }
+  #btn-full { display: none; }
+  .spin-btn { width: 100%; font-size: 1rem; }
+  .name-input { min-width: 0; font-size: 0.95rem; }
+  main { padding: 5rem 1rem 3rem; }
+  .wheel-wrap { width: min(92vmin, 400px); }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a href="index.html" class="nav-back">← Volver</a>
+  <a href="index.html" class="nav-logo">🌕 18 · TOMAS</a>
+  <div class="nav-tools">
+    <button class="icon-btn" id="btn-edit">⚙ Desafíos</button>
+    <button class="icon-btn" id="btn-full">⛶ Pantalla completa</button>
+  </div>
+</nav>
+
+<main>
+  <span class="tag">Atrevete si podés</span>
+  <h1>Ruleta de desafíos</h1>
+
+      <!-- ===== 🔒 CANDADO: borrá o comentá desde acá hasta "FIN CANDADO" para habilitar la subida ===== --> 
+    <div class="upload-lock" id="upload-lock">
+      <div class="upload-lock-icon">🔒</div>
+      <div class="upload-lock-title">Giro bloqueado</div>
+      <div class="upload-lock-text">Se habilita el día de la fiesta.<br>Mientras tanto podés ver la interfaz.</div>
+    </div>
+      <!--  ===== FIN CANDADO ===== --> 
+
+  <div class="numero-wrap">
+  <p class="numero-label">✦ Número de la suerte ✦</p>
+  <div class="numero-display" id="numero-display">?</div>
+  <div class="numero-config">
+    <span style="font-size:0.8rem;color:var(--text-muted)">del 1 al</span>
+    <input type="number" id="numero-max" value="70" min="2" max="999"
+      style="width:70px;padding:0.4rem;background:rgba(255,255,255,0.05);border:1px solid rgba(196,168,130,0.25);color:var(--parchment);font-family:'Jost',sans-serif;font-size:1rem;text-align:center;outline:none;">
+  </div>
+  <button class="numero-btn" id="btn-numero">🎲 Girar número</button>
+  <p class="numero-historial-label">Últimos números:</p>
+  <div class="numero-historial" id="numero-historial"></div>
+</div>
+
+  <div class="stage">
+    <div class="wheel-wrap">
+      <div class="pointer"></div>
+      <canvas id="wheel" width="900" height="900"></canvas>
+    </div>
+
+    <div class="controls">
+      <input type="text" class="name-input" id="player-name" placeholder="¿Quién gira?" maxlength="30">
+      <button class="spin-btn" id="btn-spin">¡GIRAR!</button>
+    </div>
+    <p class="remaining" id="remaining"></p>
+
+    <div class="editor" id="editor">
+      <h2>Tus desafíos</h2>
+      <p>Uno por línea. Mínimo 2. Se guardan en este navegador (el de la compu del proyector).</p>
+      <textarea id="challenges-text"></textarea>
+      <label class="check"><input type="checkbox" id="no-repeat" checked> No repetir desafíos hasta que se agoten todos</label>
+      <div class="editor-row">
+        <button class="icon-btn" id="btn-save">Guardar</button>
+        <button class="icon-btn" id="btn-reset">Restaurar los de ejemplo</button>
+        <button class="icon-btn" id="btn-refill">Volver a habilitar todos</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="result" id="result">
+  <span class="result-label">Le tocó a</span>
+  <div class="result-name" id="result-name"></div>
+  <span class="result-label">Su desafío</span>
+  <div class="result-text" id="result-text"></div>
+  <button class="icon-btn" id="btn-close" style="margin-top:1rem;font-size:0.9rem;padding:0.6rem 1.6rem">¡Aceptado!</button>
+</div>
+
+<script>
+// ── DESAFÍOS DE EJEMPLO (los podés cambiar desde el botón ⚙ Desafíos) ──
+const DEFAULTS = [
+  "Bailá 30 segundos sin música",
+  "Cantá el estribillo de una canción a elección del grupo",
+  "Imitá a alguien de la fiesta hasta que lo adivinen",
+  "Hacé 10 sentadillas mirando a los ojos a alguien",
+  "Contá un secreto vergonzoso (de nivel medio)",
+  "Hablá con acento extranjero por los próximos 5 minutos",
+  "Dejá que el grupo te saque una foto ridícula",
+  "Hacé un brindis improvisado para Tomas",
+  "Sacate un selfie con 3 personas que no conocés bien",
+  "Mostrá tu mejor pose de modelo",
+  "Inventá un chiste y que alguien se ría (o repetí)",
+  "Elegí a alguien para que te dé un desafío extra"
+];
+const PALETTE = ['#2A1245', '#1C2438', '#4A1620', '#12263D', '#3A2A52', '#25182E'];
+const KEY_C = 'ruleta_desafios', KEY_R = 'ruleta_norepeat';
+
+// ── ESTADO ──
+let challenges = loadChallenges();
+let pool = challenges.map((_, i) => i);
+let rot = 0, spinning = false;
+const $ = id => document.getElementById(id);
+const canvas = $('wheel'), ctx = canvas.getContext('2d');
+
+function safeGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
+function safeSet(k, v) { try { localStorage.setItem(k, v); } catch {} }
+function loadChallenges() {
+  try {
+    const saved = JSON.parse(safeGet(KEY_C));
+    if (Array.isArray(saved) && saved.length >= 2) return saved;
+  } catch {}
+  return [...DEFAULTS];
+}
+
+// ── DIBUJO ──
+function shorten(t, max) { return t.length > max ? t.slice(0, max - 1).trim() + '…' : t; }
+
+function drawWheel() {
+  const n = challenges.length, S = canvas.width, c = S / 2, R = c - 12;
+  ctx.clearRect(0, 0, S, S);
+  const seg = (Math.PI * 2) / n;
+  const fontSize = n <= 8 ? 34 : n <= 14 ? 27 : n <= 20 ? 21 : 17;
+  const maxChars = n <= 8 ? 20 : n <= 14 ? 17 : n <= 20 ? 15 : 13;
+
+  for (let i = 0; i < n; i++) {
+    const a0 = rot + i * seg, a1 = a0 + seg;
+    ctx.beginPath(); ctx.moveTo(c, c); ctx.arc(c, c, R, a0, a1); ctx.closePath();
+    ctx.fillStyle = PALETTE[i % PALETTE.length]; ctx.fill();
+    ctx.strokeStyle = 'rgba(196,168,130,0.5)'; ctx.lineWidth = 2; ctx.stroke();
+
+    ctx.save();
+    ctx.translate(c, c); ctx.rotate(a0 + seg / 2);
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#E8DCC8'; ctx.font = `${fontSize}px Jost, sans-serif`;
+    ctx.fillText(shorten(challenges[i], maxChars), R - 28, 0);
+    ctx.restore();
+  }
+  // aro exterior y centro
+  ctx.beginPath(); ctx.arc(c, c, R, 0, Math.PI * 2);
+  ctx.strokeStyle = '#C4A882'; ctx.lineWidth = 8; ctx.stroke();
+  ctx.beginPath(); ctx.arc(c, c, 46, 0, Math.PI * 2);
+  ctx.fillStyle = '#04060F'; ctx.fill(); ctx.strokeStyle = '#C4A882'; ctx.lineWidth = 5; ctx.stroke();
+  ctx.fillStyle = '#C4A882'; ctx.font = '40px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('🌕', c, c + 2);
+}
+
+function updateRemaining() {
+  const noRep = $('no-repeat').checked;
+  $('remaining').textContent = noRep
+    ? `Quedan ${pool.length} de ${challenges.length} desafíos`
+    : `${challenges.length} desafíos en la ruleta`;
+}
+
+// ── GIRAR ──
+function spin() {
+  if (spinning) return;
+  const name = $('player-name').value.trim();
+  if (!name) { $('player-name').focus(); $('player-name').style.borderColor = '#C0392B'; setTimeout(() => $('player-name').style.borderColor = '', 1200); return; }
+
+  const noRep = $('no-repeat').checked;
+  if (noRep && !pool.length) pool = challenges.map((_, i) => i);
+  const candidates = noRep ? pool : challenges.map((_, i) => i);
+  const target = candidates[Math.floor(Math.random() * candidates.length)];
+
+  const n = challenges.length, seg = (Math.PI * 2) / n;
+  // el puntero está arriba (3π/2): buscamos que el centro del segmento quede ahí
+  const jitter = (Math.random() - 0.5) * seg * 0.7;
+  let final = (Math.PI * 1.5) - (target + 0.5) * seg + jitter;
+  const twoPi = Math.PI * 2;
+  const base = rot - (rot % twoPi);
+  final = base + twoPi * (5 + Math.floor(Math.random() * 3)) + ((final % twoPi) + twoPi) % twoPi;
+  if (final < rot + twoPi * 4) final += twoPi * 2;
+
+  const start = rot, dist = final - start, dur = 5500, t0 = performance.now();
+  spinning = true; $('btn-spin').disabled = true;
+
+  (function frame(now) {
+    const p = Math.min(1, (now - t0) / dur);
+    const ease = 1 - Math.pow(1 - p, 4);
+    rot = start + dist * ease;
+    drawWheel();
+    if (p < 1) return requestAnimationFrame(frame);
+    spinning = false; $('btn-spin').disabled = false;
+    if (noRep) pool = pool.filter(i => i !== target);
+    updateRemaining();
+    showResult(name, challenges[target]);
+  })(t0);
+}
+
+function showResult(name, text) {
+  $('result-name').textContent = name;
+  $('result-text').textContent = text;
+  $('result').classList.add('open');
+}
+function closeResult() {
+  $('result').classList.remove('open');
+  $('player-name').value = ''; $('player-name').focus();
+}
+
+// ── EDITOR ──
+function fillEditor() { $('challenges-text').value = challenges.join('\n'); }
+function applyChallenges(list) {
+  challenges = list; safeSet(KEY_C, JSON.stringify(list));
+  pool = challenges.map((_, i) => i); rot = 0;
+  drawWheel(); updateRemaining();
+}
+
+$('btn-edit').onclick = () => { fillEditor(); $('editor').classList.toggle('open'); };
+$('btn-save').onclick = () => {
+  const list = $('challenges-text').value.split('\n').map(s => s.trim()).filter(Boolean);
+  if (list.length < 2) { alert('Poné al menos 2 desafíos'); return; }
+  applyChallenges(list);
+};
+$('btn-reset').onclick = () => { if (confirm('¿Volver a los desafíos de ejemplo?')) { applyChallenges([...DEFAULTS]); fillEditor(); } };
+$('btn-refill').onclick = () => { pool = challenges.map((_, i) => i); updateRemaining(); };
+$('no-repeat').checked = safeGet(KEY_R) !== '0';
+$('no-repeat').onchange = e => { safeSet(KEY_R, e.target.checked ? '1' : '0'); updateRemaining(); };
+
+$('btn-spin').onclick = spin;
+$('player-name').addEventListener('keydown', e => { if (e.key === 'Enter') spin(); });
+$('btn-close').onclick = closeResult;
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeResult(); });
+$('btn-full').onclick = () => {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen?.();
+};
+
+// ── FONDO DE ESTRELLAS ──
+const bg = $('bg-canvas'), bctx = bg.getContext('2d');
+let W, H, stars = [], frame = 0;
+function resize() { W = bg.width = innerWidth; H = bg.height = innerHeight; }
+resize(); addEventListener('resize', resize);
+for (let i = 0; i < 80; i++) stars.push({
+  x: Math.random() * innerWidth, y: Math.random() * innerHeight,
+  s: Math.random() * 1 + 0.3, a: Math.random() * 0.4 + 0.1,
+  sp: Math.random() * 0.02 + 0.005, o: Math.random() * 6.28
+});
+(function bgLoop() {
+  bctx.clearRect(0, 0, W, H); frame++;
+  stars.forEach(p => {
+    bctx.globalAlpha = Math.max(0, p.a + Math.sin(frame * p.sp + p.o) * 0.1);
+    bctx.fillStyle = '#fff'; bctx.beginPath(); bctx.arc(p.x, p.y, p.s, 0, 6.28); bctx.fill();
+  });
+  requestAnimationFrame(bgLoop);
+})();
+
+// ── INICIO ──
+// esperamos a que cargue la fuente para dibujar bien el texto de la rueda
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { drawWheel(); updateRemaining(); });
+drawWheel(); updateRemaining();
+
+// ── NÚMERO DE LA SUERTE ──────────────────────────────────────────
+const numeroDisplay = $('numero-display');
+const numeroHistorial = $('numero-historial');
+const numeroUsados = new Set();
+let numeroRolling = false;
+
+$('btn-numero').onclick = () => {
+  if (numeroRolling) return;
+  const max = parseInt($('numero-max').value) || 70;
+  const disponibles = [];
+  for (let i = 1; i <= max; i++) if (!numeroUsados.has(i)) disponibles.push(i);
+
+  if (!disponibles.length) {
+    numeroDisplay.textContent = '✓';
+    showToast('Ya salieron todos los números. Recargá para reiniciar.');
+    return;
+  }
+
+  const final = disponibles[Math.floor(Math.random() * disponibles.length)];
+  numeroRolling = true;
+  $('btn-numero').disabled = true;
+  numeroDisplay.classList.add('rolling');
+
+  let ticks = 0;
+  const totalTicks = 28;
+  const interval = setInterval(() => {
+    // número random mientras rueda
+    const r = Math.floor(Math.random() * max) + 1;
+    numeroDisplay.textContent = r;
+    ticks++;
+
+    if (ticks >= totalTicks) {
+      clearInterval(interval);
+      numeroDisplay.textContent = final;
+      numeroDisplay.classList.remove('rolling');
+      numeroUsados.add(final);
+      numeroRolling = false;
+      $('btn-numero').disabled = false;
+
+      // agregar al historial
+      const chip = document.createElement('span');
+      chip.className = 'numero-chip';
+      chip.textContent = final;
+      numeroHistorial.insertBefore(chip, numeroHistorial.firstChild);
+    }
+  }, 60);
+};
+
+</script>
+<div style="position:fixed;left:.6rem;bottom:calc(.6rem + env(safe-area-inset-bottom,0px));z-index:9999;padding:.3rem .7rem;background:rgba(0,0,0,.75);border:1px solid rgba(196,168,130,.35);color:#C4A882;font:400 12px system-ui,sans-serif;pointer-events:none">Versión demo · datos de ejemplo</div>
+</body>
+</html>

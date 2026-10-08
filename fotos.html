@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📸 Fotos — 18 de Tomas</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=New+Rocker&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void: #04060F; --void2: #090D1A; --void3: #111828; --void4: #1C2438;
+  --colour: #7B2FBE; --colour-bright: #B44FE8;
+  --star: #C4A882; --parchment: #E8DCC8; --text-muted: #7A6E60;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--void); color: var(--parchment); font-family: 'Jost', sans-serif; min-height: 100vh; }
+
+#bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(to bottom, rgba(4,6,15,0.97), transparent);
+  backdrop-filter: blur(4px);
+}
+
+  .nav-back, .nav-logo {
+    color: var(--parchment);
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--star); }
+  .nav-logo:hover { color: var(--star); }
+
+.page-hero { position: relative; z-index: 1; padding: 8rem 2rem 4rem; text-align: center; }
+.page-tag { font-size: 0.7rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--star); display: block; margin-bottom: 0.5rem; }
+.page-title { font-family: 'New Rocker', system-ui; font-size: clamp(2rem, 6vw, 4rem); margin-bottom: 0.75rem; }
+.page-sub { font-size: 0.9rem; color: var(--text-muted); max-width: 480px; margin: 0 auto 2rem; line-height: 1.6; }
+.page-line { width: 80px; height: 1px; background: linear-gradient(to right, transparent, var(--star), transparent); margin: 0 auto 3rem; }
+
+.upload-wrap { position: relative; z-index: 1; max-width: 700px; margin: 0 auto 4rem; padding: 0 2rem; }
+.upload-name-wrap { display: flex; gap: 0.75rem; margin-bottom: 0.75rem; }
+.upload-name-input {
+  flex: 1; padding: 0.75rem 1rem; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(196,168,130,0.2); color: var(--parchment);
+  font-family: 'Jost', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s;
+}
+.upload-name-input:focus { border-color: var(--star); }
+.upload-zone {
+  display: block; border: 1px dashed rgba(196,168,130,0.3); background: var(--void2);
+  padding: 2.5rem; text-align: center; cursor: pointer; transition: all 0.3s; position: relative;
+}
+.upload-zone:hover, .upload-zone.drag-over { border-color: var(--star); background: rgba(196,168,130,0.04); }
+.upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.6; }
+.upload-text { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+.upload-text strong { color: var(--star); }
+.upload-progress { display: none; margin-top: 1rem; height: 3px; background: var(--void4); border-radius: 2px; overflow: hidden; }
+.upload-progress-bar { height: 100%; background: linear-gradient(to right, var(--colour), var(--colour-bright)); width: 0%; transition: width 0.3s ease; }
+.upload-status { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center; min-height: 1.2em; }
+
+.gallery-controls {
+  position: relative; z-index: 1; max-width: 1200px; margin: 0 auto 2rem; padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+}
+.gallery-count { font-size: 0.8rem; color: var(--text-muted); letter-spacing: 0.1em; }
+.gallery-count span { color: var(--star); font-family: 'New Rocker', system-ui; font-size: 1.1rem; }
+.sort-btns { display: flex; gap: 0.5rem; }
+.sort-btn {
+  padding: 0.4rem 1rem; background: transparent; border: 1px solid rgba(196,168,130,0.2);
+  color: var(--text-muted); font-family: 'Jost', sans-serif; font-size: 0.75rem;
+  letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+}
+.sort-btn.active, .sort-btn:hover { border-color: var(--star); color: var(--star); background: rgba(196,168,130,0.05); }
+
+.gallery-wrap { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto 5rem; padding: 0 2rem; }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+
+.photo-card { background: var(--void2); border: 1px solid rgba(196,168,130,0.1); overflow: hidden; position: relative; transition: border-color 0.3s, transform 0.3s; }
+.photo-card:hover { border-color: rgba(196,168,130,0.3); transform: translateY(-2px); }
+.photo-card.top-voted { border-color: var(--star); box-shadow: 0 0 20px rgba(196,168,130,0.15); }
+.photo-card-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; background: var(--void4); cursor: pointer; }
+.photo-card-body { padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.photo-card-meta { flex: 1; min-width: 0; }
+.photo-card-author { font-size: 0.8rem; color: var(--star); letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.photo-card-time { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem; }
+
+.vote-btn {
+  display: flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.75rem; background: transparent;
+  border: 1px solid rgba(180,79,232,0.3); color: var(--text-muted);
+  font-family: 'Jost', sans-serif; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+}
+.vote-btn:hover { border-color: var(--colour-bright); color: var(--colour-bright); background: rgba(180,79,232,0.08); }
+.vote-btn.voted { border-color: var(--colour-bright); color: var(--colour-bright); background: rgba(180,79,232,0.12); }
+.vote-count { font-family: 'New Rocker', system-ui; font-size: 0.95rem; }
+
+.top-badge {
+  position: absolute; top: 0.6rem; left: 0.6rem; background: var(--star); color: var(--void);
+  font-family: 'New Rocker', system-ui; font-size: 0.7rem; padding: 0.2rem 0.5rem; letter-spacing: 0.1em; pointer-events: none;
+}
+
+.gallery-empty { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+.gallery-empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+.gallery-empty p { font-size: 0.9rem; line-height: 1.6; }
+.gallery-loading { grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted); font-size: 0.85rem; letter-spacing: 0.1em; }
+
+.lightbox {
+  display: none; position: fixed; inset: 0; background: rgba(4,6,15,0.96); z-index: 500;
+  align-items: center; justify-content: center; padding: 2rem; flex-direction: column; gap: 1rem;
+}
+.lightbox.open { display: flex; }
+.lightbox img { max-width: 90vw; max-height: 75vh; object-fit: contain; border: 1px solid rgba(196,168,130,0.15); }
+.lightbox-meta { text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+.lightbox-meta strong { color: var(--star); }
+.lightbox-close { position: absolute; top: 1.5rem; right: 1.5rem; background: transparent; border: none; color: var(--text-muted); font-size: 1.8rem; cursor: pointer; line-height: 1; transition: color 0.2s; }
+.lightbox-close:hover { color: var(--parchment); }
+
+.ranking-wrap { position: relative; z-index: 1; max-width: 700px; margin: 0 auto 5rem; padding: 0 2rem; }
+.ranking-title { font-family: 'New Rocker', system-ui; font-size: 1.4rem; color: var(--star); text-align: center; margin-bottom: 0.5rem; }
+.ranking-sub { font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-bottom: 1.5rem; letter-spacing: 0.05em; }
+.ranking-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.ranking-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: var(--void2); border: 1px solid rgba(196,168,130,0.1); cursor: pointer; transition: all 0.2s; }
+.ranking-item:hover { border-color: rgba(196,168,130,0.3); }
+.ranking-item:first-child { border-color: var(--star); background: rgba(196,168,130,0.06); }
+.ranking-pos { font-family: 'New Rocker', system-ui; font-size: 1.3rem; color: var(--star); opacity: 0.5; min-width: 28px; text-align: center; }
+.ranking-item:first-child .ranking-pos { opacity: 1; }
+.ranking-thumb { width: 48px; height: 48px; object-fit: cover; flex-shrink: 0; background: var(--void4); }
+.ranking-info { flex: 1; min-width: 0; }
+.ranking-author { font-size: 0.85rem; }
+.ranking-votes { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.1rem; }
+
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem; background: var(--void3); border: 1px solid var(--colour-bright);
+  color: var(--parchment); padding: 0.85rem 1.5rem; font-size: 0.85rem; z-index: 999;
+  transform: translateY(100px); opacity: 0; transition: all 0.4s ease; max-width: 300px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+footer { position: relative; z-index: 1; text-align: center; padding: 2rem; border-top: 1px solid rgba(122,110,96,0.1); font-size: 0.75rem; color: var(--text-muted); }
+
+@media (max-width: 600px) {
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+  .gallery-controls { flex-direction: column; align-items: flex-start; }
+  .upload-name-wrap { flex-direction: column; }
+  nav { padding: 0.75rem 1rem; }
+}
+@media (max-width: 600px) {
+  .page-hero { padding: 5rem 1.5rem 2rem; }
+  .upload-zone { padding: 1.25rem 1rem; }
+  .upload-icon { font-size: 1.6rem; margin-bottom: 0.4rem; }
+  .upload-text { font-size: 0.8rem; }
+  .upload-wrap { margin-bottom: 2rem; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+  .ranking-wrap { padding: 0 1rem; }
+}
+.camera-btn {
+  display: block; width: 100%; margin-top: 0.75rem; padding: 0.9rem 1rem;
+  background: linear-gradient(135deg, var(--colour), var(--colour-bright)); border: none; color: #fff;
+  font-family: 'New Rocker', system-ui; font-size: 1.05rem; letter-spacing: 0.08em;
+  cursor: pointer; text-align: center; transition: transform 0.2s;
+}
+.camera-btn:hover { transform: scale(1.02); }
+
+/* ===== 🔒 CANDADO (borrá o comentá este bloque CSS junto con el bloque HTML del candado) =====
+.upload-lock {
+  position: absolute; inset: 0 2rem; z-index: 5;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;
+  background: rgba(4,6,15,0.82); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+  border: 1px dashed rgba(196,168,130,0.35); text-align: center; padding: 1.5rem; cursor: not-allowed;
+}
+.upload-lock-icon { font-size: 2.5rem; }
+.upload-lock-title { font-family: 'New Rocker', system-ui; font-size: 1.1rem; color: var(--star); letter-spacing: 0.05em; }
+.upload-lock-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+/* ===== FIN CANDADO CSS ===== */
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a href="index.html" class="nav-back">← Volver</a>
+  <a href="index.html" class="nav-logo">🌕 18 · TOMAS</a>
+</nav>
+
+<div class="page-hero">
+  <span class="page-tag">La noche en imágenes</span>
+  <h1 class="page-title">Galería de fotos</h1>
+  <p class="page-sub">Subí tus fotos de la fiesta. La más votada gana un premio.</p>
+  <div class="page-line"></div>
+</div>
+
+<div class="upload-wrap">
+  <!-- ===== 🔒 CANDADO: borrá o comentá desde acá hasta "FIN CANDADO" para habilitar la subida ===== 
+  <div class="upload-lock" id="upload-lock">
+    <div class="upload-lock-icon">🔒</div>
+    <div class="upload-lock-title">Subida bloqueada</div>
+    <div class="upload-lock-text">Se habilita el día de la fiesta.<br>Mientras tanto podés ver la galería.</div>
+  </div>
+  <!-- ===== FIN CANDADO ===== --> 
+  <div class="upload-name-wrap">
+    <input type="text" class="upload-name-input" id="photographer-name" placeholder="Tu nombre (aparece en la foto)">
+  </div>
+  <label class="upload-zone" id="upload-zone">
+    <input type="file" id="photo-input" accept="image/*" multiple>
+    <div class="upload-icon">📷</div>
+    <p class="upload-text">
+      <strong>Hacé click o arrastrá</strong> tus fotos acá<br>
+      <span style="font-size:0.8rem">JPG, PNG, WebP · Se achican solas al subir</span>
+    </p>
+  </label>
+  <input type="file" id="camera-input" accept="image/*" capture="environment" hidden>
+  <button type="button" class="camera-btn" id="camera-btn">📸 Sacar una foto</button>
+  <div class="upload-progress" id="upload-progress">
+    <div class="upload-progress-bar" id="upload-progress-bar"></div>
+  </div>
+  <p class="upload-status" id="upload-status"></p>
+</div>
+
+<div class="gallery-controls">
+  <p class="gallery-count"><span id="photo-count">0</span> fotos en la galería</p>
+  <div class="sort-btns">
+    <button class="sort-btn active" onclick="setSort('recent', this)">Más recientes</button>
+    <button class="sort-btn" onclick="setSort('votes', this)">Más votadas</button>
+  </div>
+</div>
+
+<div class="gallery-wrap">
+  <div class="gallery-grid" id="gallery-grid">
+    <div class="gallery-loading">Cargando fotos...</div>
+  </div>
+</div>
+
+<div class="ranking-wrap">
+  <h2 class="ranking-title">🏆 Top votadas</h2>
+  <p class="ranking-sub">Las fotos con más votos de la noche</p>
+  <div class="ranking-list" id="ranking-list"></div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="">
+  <div class="lightbox-meta" id="lightbox-meta"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>
+  <p>📸 Galería de la fiesta de <strong style="color:var(--star)">Tomas</strong> — 18 años · 5/12/2026</p>
+</footer>
+
+<script type="module">
+import { initializeApp } from "./demo-firebase.js";
+import { getDatabase, ref, push, onValue, runTransaction, serverTimestamp }
+  from "./demo-firebase.js";
+import { getAuth, signInAnonymously }
+  from "./demo-firebase.js";
+
+// ── CONFIG ──
+const FIREBASE_CONFIG = {
+  apiKey: "DEMO",
+  authDomain: "DEMO",
+  databaseURL: "DEMO",
+  projectId: "DEMO",
+  storageBucket: "DEMO",
+  messagingSenderId: "DEMO",
+  appId: "DEMO"
+};
+
+const CLOUDINARY_CLOUD = 'DEMO';
+const CLOUDINARY_PRESET = 'DEMO';
+const MAX_FILE_SIZE_MB = 10;   // límite de Cloudinary (plan gratis) para lo que se sube
+const MAX_RAW_MB = 60;         // tamaño máximo de la foto original (después se achica)
+const MAX_SIDE = 1600;         // lado más largo, en píxeles, de lo que se sube
+const JPEG_QUALITY = 0.82;
+
+// ── ESTADO ──
+window.myVotes = JSON.parse(localStorage.getItem('myVotes') || '{}');
+let currentSort = 'recent';
+let allPhotos = {};
+
+// ── INIT ──
+const app = initializeApp(FIREBASE_CONFIG);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+// Esperamos al login anónimo antes de escuchar/escribir
+const authReady = signInAnonymously(auth).catch(err => {
+  console.error('Error de autenticación:', err);
+  showToast('No se pudo iniciar sesión. Revisá que Anónimo esté activado en Firebase');
+});
+
+// ── FONDO DE ESTRELLAS ──
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resizeCanvas() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const STAR_COLORS = ['#FFFFFF','#FFFFFF','#C8D8FF','#A8C4FF','#E8EEFF','#B44FE8'];
+for (let i = 0; i < 80; i++) {
+  const bright = Math.random() < 0.08;
+  particles.push({
+    x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight,
+    vx: (Math.random()-0.5)*0.04, vy: (Math.random()-0.5)*0.04,
+    size: bright ? Math.random()*2+1.5 : Math.random()*1+0.3,
+    alpha: bright ? Math.random()*0.4+0.5 : Math.random()*0.4+0.08,
+    twinkleSpeed: Math.random()*0.02+0.005,
+    twinkleOffset: Math.random()*Math.PI*2,
+    hue: STAR_COLORS[Math.floor(Math.random()*STAR_COLORS.length)], bright
+  });
+}
+let frame = 0;
+function drawBg() {
+  ctx.clearRect(0,0,W,H); frame++;
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x<0) p.x=W; if (p.x>W) p.x=0;
+    if (p.y<0) p.y=H; if (p.y>H) p.y=0;
+    const tw = Math.sin(frame*p.twinkleSpeed+p.twinkleOffset);
+    const a = p.alpha + tw*(p.bright?0.35:0.1);
+    ctx.save(); ctx.globalAlpha = Math.max(0,a);
+    if (p.bright) {
+      const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*4);
+      g.addColorStop(0,p.hue); g.addColorStop(1,'transparent');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(p.x,p.y,p.size*4,0,Math.PI*2); ctx.fill();
+    }
+    ctx.fillStyle=p.hue; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  });
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+// ── SUBIDA ──
+const uploadZone = document.getElementById('upload-zone');
+const photoInput = document.getElementById('photo-input');
+
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault(); uploadZone.classList.remove('drag-over');
+  handleFiles(Array.from(e.dataTransfer.files));
+});
+photoInput.addEventListener('change', e => handleFiles(Array.from(e.target.files)));
+const cameraInput = document.getElementById('camera-input');
+
+document.getElementById('camera-btn').addEventListener('click', () => {
+  if (document.getElementById('upload-lock')) { showToast('La subida está bloqueada por ahora 🔒'); return; }
+  const nameInput = document.getElementById('photographer-name');
+  if (!nameInput.value.trim()) { showToast('Primero escribí tu nombre 📝'); nameInput.focus(); return; }
+  cameraInput.click();
+});
+
+cameraInput.addEventListener('change', e => {
+  const files = Array.from(e.target.files);
+  e.target.value = '';
+  handleFiles(files);
+});
+
+async function handleFiles(files) {
+  if (document.getElementById('upload-lock')) { showToast('La subida está bloqueada por ahora 🔒'); photoInput.value = ''; return; }
+  const name = document.getElementById('photographer-name').value.trim();
+  if (!name) { showToast('Primero escribí tu nombre 📝'); photoInput.value = ''; return; }
+
+  const valid = files.filter(f => {
+    if (!f.type.startsWith('image/')) { showToast(`${f.name} no es una imagen`); return false; }
+    if (f.size > MAX_RAW_MB * 1024 * 1024) { showToast(`${f.name} es demasiado pesada`); return false; }
+    return true;
+  });
+  if (!valid.length) { photoInput.value = ''; return; }
+
+  const progress = document.getElementById('upload-progress');
+  progress.style.display = 'block';
+  await authReady;
+
+  let ok = 0, fail = 0, lastErr = '';
+  for (let i = 0; i < valid.length; i++) {
+    setProgress((i / valid.length) * 100);
+    try {
+      setStatus(`Preparando ${i+1} de ${valid.length}...`);
+      const small = await shrinkImage(valid[i]);
+      if (small.size > MAX_FILE_SIZE_MB * 1024 * 1024) throw new Error('la foto es muy pesada');
+      setStatus(`Subiendo ${i+1} de ${valid.length}...`);
+      await uploadOne(small, name);
+      ok++;
+    } catch (err) {
+      console.error(err);
+      fail++; lastErr = (err && err.message) ? err.message : String(err);
+    }
+  }
+
+  setProgress(100);
+  setStatus(fail ? '' : '✓ Listo');
+  setTimeout(() => {
+    progress.style.display = 'none';
+    setStatus('');
+    setProgress(0);
+  }, 2000);
+
+  if (ok && !fail) showToast(`${ok} foto${ok>1?'s':''} subida${ok>1?'s':''} 🎉`);
+  else if (ok && fail) showToast(`Se subieron ${ok}, pero ${fail} fallaron (${lastErr})`);
+  else showToast(`No se pudo subir: ${lastErr}`);
+  photoInput.value = '';
+}
+
+// Achica la foto en el celular ANTES de subirla: menos memoria, menos datos, sube más rápido.
+async function shrinkImage(file) {
+  const maxBytes = MAX_FILE_SIZE_MB * 1024 * 1024;
+  if (file.size < 400 * 1024 && file.type === 'image/jpeg') return file;
+
+  const url = URL.createObjectURL(file);
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.onload = () => {
+      // pequeño timeout para que Safari termine de decodificar antes de dibujar
+      setTimeout(async () => {
+        try {
+          const w0 = img.naturalWidth, h0 = img.naturalHeight;
+          const scale = Math.min(1, MAX_SIDE / Math.max(w0, h0));
+          if (scale === 1 && file.type === 'image/jpeg' && file.size <= 1.5 * 1024 * 1024) {
+            URL.revokeObjectURL(url);
+            return resolve(file);
+          }
+          const w = Math.max(1, Math.round(w0 * scale));
+          const h = Math.max(1, Math.round(h0 * scale));
+          const cv = document.createElement('canvas');
+          cv.width = w; cv.height = h;
+          const c2d = cv.getContext('2d', { willReadFrequently: false });
+          c2d.fillStyle = '#fff';
+          c2d.fillRect(0, 0, w, h);
+          c2d.drawImage(img, 0, 0, w, h);
+          img.src = '';  // liberar referencia antes de toBlob
+          cv.toBlob(blob => {
+            cv.width = cv.height = 0;  // liberar canvas
+            URL.revokeObjectURL(url);
+            if (!blob) return resolve(file);
+            if (blob.size >= file.size && file.size <= maxBytes) return resolve(file);
+            resolve(new File([blob], (file.name.replace(/\.[^.]+$/, '') || 'foto') + '.jpg', { type: 'image/jpeg' }));
+          }, 'image/jpeg', JPEG_QUALITY);
+        } catch (err) {
+          URL.revokeObjectURL(url);
+          if (file.size <= maxBytes) resolve(file);
+          else reject(err);
+        }
+      }, 80);  // ← este delay es el fix clave para iOS/Safari
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      if (file.size <= maxBytes) resolve(file);
+      else reject(new Error('no se pudo leer la imagen'));
+    };
+    img.src = url;
+  });
+}
+
+async function uploadOne(file, author) {
+  // DEMO: la foto queda en memoria (se pierde al recargar); no se sube a ningún servidor
+  const dataUrl = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(file); });
+  await push(ref(db, 'fotos'), {
+    url: dataUrl,
+    thumb: dataUrl,
+    author,
+    votes: 0,
+    uploadedAt: serverTimestamp()
+  });
+}
+
+function setProgress(pct) { document.getElementById('upload-progress-bar').style.width = pct + '%'; }
+function setStatus(msg) { document.getElementById('upload-status').textContent = msg; }
+
+// ── ESCUCHA EN TIEMPO REAL ──
+authReady.then(() => {
+  onValue(ref(db, 'fotos'), snap => {
+    allPhotos = snap.val() || {};
+    renderGallery();
+    renderRanking();
+    document.getElementById('photo-count').textContent = Object.keys(allPhotos).length;
+  }, err => {
+    console.error(err);
+    showToast('No se pueden leer las fotos. Revisá las reglas de la base de datos');
+  });
+});
+
+// ── GALERÍA ──
+function renderGallery() {
+  const grid = document.getElementById('gallery-grid');
+  const entries = Object.entries(allPhotos);
+
+  if (!entries.length) {
+    grid.innerHTML = `
+      <div class="gallery-empty">
+        <div class="gallery-empty-icon">📷</div>
+        <p>Todavía no hay fotos.<br>¡Sé el primero en subir una!</p>
+      </div>`;
+    return;
+  }
+
+  const sorted = [...entries].sort((a, b) => {
+    if (currentSort === 'votes') return (b[1].votes||0) - (a[1].votes||0);
+    return (b[1].uploadedAt||0) - (a[1].uploadedAt||0);
+  });
+
+  const topId = [...entries].sort((a,b) => (b[1].votes||0)-(a[1].votes||0))[0]?.[0];
+  const myVotes = window.myVotes || {};
+
+  grid.innerHTML = sorted.map(([id, p]) => {
+    const voted = !!myVotes[id];
+    const isTop = id === topId && (p.votes||0) > 0;
+    return `
+      <div class="photo-card ${isTop ? 'top-voted' : ''}">
+        ${isTop ? '<span class="top-badge">★ Top</span>' : ''}
+        <img class="photo-card-img" data-id="${id}" src="${p.thumb || p.url}" alt="" loading="lazy" decoding="async">
+        <div class="photo-card-body">
+          <div class="photo-card-meta">
+            <div class="photo-card-author">📷 ${escHtml(p.author)}</div>
+            <div class="photo-card-time">${formatTime(p.uploadedAt)}</div>
+          </div>
+          <button class="vote-btn ${voted ? 'voted' : ''}" data-vote="${id}">
+            ❤️ <span class="vote-count">${p.votes||0}</span>
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── RANKING ──
+function renderRanking() {
+  const list = document.getElementById('ranking-list');
+  const entries = Object.entries(allPhotos)
+    .filter(([,p]) => (p.votes||0) > 0)
+    .sort((a,b) => (b[1].votes||0)-(a[1].votes||0))
+    .slice(0,5);
+
+  if (!entries.length) {
+    list.innerHTML = '<p style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:1rem">Todavía nadie votó — ¡sé el primero!</p>';
+    return;
+  }
+
+  const medals = ['🥇','🥈','🥉','4.','5.'];
+  list.innerHTML = entries.map(([id,p],i) => `
+    <div class="ranking-item" data-id="${id}">
+      <span class="ranking-pos">${medals[i]}</span>
+      <img class="ranking-thumb" src="${p.thumb||p.url}" alt="" decoding="async">
+      <div class="ranking-info">
+        <div class="ranking-author">${escHtml(p.author)}</div>
+        <div class="ranking-votes">${p.votes||0} voto${(p.votes||0)!==1?'s':''}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── VOTAR ──
+function toggleVote(photoId) {
+  const myVotes = window.myVotes || {};
+  const already = !!myVotes[photoId];
+
+  if (already) {
+    runTransaction(ref(db, `fotos/${photoId}/votes`), v => Math.max(0, (v||0)-1));
+    delete myVotes[photoId];
+    showToast('Voto quitado');
+  } else {
+    runTransaction(ref(db, `fotos/${photoId}/votes`), v => (v||0)+1);
+    myVotes[photoId] = true;
+    showToast('¡Voto registrado! ❤️');
+  }
+
+  window.myVotes = myVotes;
+  localStorage.setItem('myVotes', JSON.stringify(myVotes));
+  // la galería se redibuja sola cuando Firebase notifica el cambio
+}
+
+document.getElementById('gallery-grid').addEventListener('click', e => {
+  const btn = e.target.closest('.vote-btn');
+  if (btn) { toggleVote(btn.dataset.vote); return; }
+  openFromEl(e);
+});
+document.getElementById('ranking-list').addEventListener('click', openFromEl);
+
+// ── ORDEN ──
+window.setSort = function(sort, btn) {
+  currentSort = sort;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGallery();
+};
+
+// ── LIGHTBOX ──
+const bigUrl = u => String(u).replace('/upload/', '/upload/w_1600,q_auto,f_auto/');
+function openLightbox(url, author, votes) {
+  document.getElementById('lightbox-img').src = bigUrl(url);
+  document.getElementById('lightbox-meta').innerHTML =
+    `<strong>${author}</strong> · ${votes} voto${votes!==1?'s':''}`;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+window.closeLightbox = function() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightbox-img').src = '';
+};
+
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+function openFromEl(e) {
+  const el = e.target.closest('.photo-card-img, .ranking-item');
+  if (!el) return;
+  const p = allPhotos[el.dataset.id];
+  if (p) openLightbox(p.url, escHtml(p.author), p.votes || 0);
+}
+
+// ── UTILIDADES ──
+function escHtml(str) {
+  return String(str||'').replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function formatTime(ts) {
+  if (!ts) return '';
+  return new Date(ts).toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+<div style="position:fixed;left:.6rem;bottom:calc(.6rem + env(safe-area-inset-bottom,0px));z-index:9999;padding:.3rem .7rem;background:rgba(0,0,0,.75);border:1px solid rgba(196,168,130,.35);color:#C4A882;font:400 12px system-ui,sans-serif;pointer-events:none">Versión demo · datos de ejemplo</div>
+</body>
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎭 18 — TOMAS — Fiesta de Disfraces</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Metamorphous&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=New+Rocker&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<div class="teaser-overlay" id="teaser-overlay">
+  <div class="teaser-mask">🎭</div>
+  <p class="teaser-sub">Algo se acerca</p>
+  <p class="teaser-text">
+    Tendras que hacer el pacto.<br>
+    Y prepararte para esta noche inolvidable.<br>
+    Anotate
+    <br>
+    <br>
+    <p class="teaser-sub">(recomiendo ver la pagina en dispositivos de escritorio)</p>
+  </p>
+  <a href="#hero" class="btn-primary" onclick="closeTeaser(event)">¿Estás del otro lado?</a>
+</div>
+<!-- ── NAV ── -->
+<nav>
+  <a href="#hero" class="nav-logo">🌕 18</a>
+  <ul class="nav-links">
+    <li><a href="#info-section">Info</a></li>
+    <li><a href="#rsvp-section">Confirmar</a></li>
+    <li><a href="#juegos-section">Juegos</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+
+<div id="hero">
+  <div class="hero-18" aria-hidden="true">18</div>
+  <div class="hero-mask" aria-label="Máscara de fiesta"><img src="skull.png" alt="Máscara de fiesta"></div>
+  <p class="hero-subtitle">Estas invitado personalmente por Tomas a su fiesta de Disfraces</p>
+  <h1 class="hero-name">Cumpleaños numero 18</h1>
+  <p class="hero-subtitle" style="font-size:0.75rem;letter-spacing:0.5em;margin-top:0.5rem">Tomas - 18 años</p>
+
+  <div class="hero-divider"></div>
+
+  <div class="hero-date-block">
+    <div class="hero-detail">
+      <span class="hero-detail-label">Fecha</span>
+      <span class="hero-detail-value"> + 13 / 03 / 2027 + </span>
+    </div>
+    <div class="countdown-sep">·</div>
+    <div class="hero-detail">
+      <span class="hero-detail-label">Hora</span>
+      <span class="hero-detail-value"> + 21 : 00 hs + </span>
+    </div>
+    <div class="countdown-sep">·</div>
+    <div class="hero-detail">
+      <span class="hero-detail-label">Lugar</span>
+      <span class="hero-detail-value"> + Av. del Ejemplo 1234, Ciudad + </span>
+    </div>
+  </div>
+  <div class="hero-divider"></div>
+
+  <div class="countdown-row" id="countdown-hero">
+    <div class="countdown-block"><span class="countdown-num" id="cd-days">--</span><span class="countdown-label">Días</span></div>
+    <div class="countdown-sep" style="font-size:2rem;opacity:0.3;align-self:center">:</div>
+    <div class="countdown-block"><span class="countdown-num" id="cd-hours">--</span><span class="countdown-label">Horas</span></div>
+    <div class="countdown-sep" style="font-size:2rem;opacity:0.3;align-self:center">:</div>
+    <div class="countdown-block"><span class="countdown-num" id="cd-mins">--</span><span class="countdown-label">Min</span></div>
+    <div class="countdown-sep" style="font-size:2rem;opacity:0.3;align-self:center">:</div>
+    <div class="countdown-block"><span class="countdown-num" id="cd-secs">--</span><span class="countdown-label">Seg</span></div>
+  </div>
+
+  <a href="#rsvp-section" class="btn-primary" style="margin-top:2rem">Confirmar asistencia</a>
+</div>
+
+<section id="info-section" class="fade-in">
+  <span class="section-tag">El evento</span>
+  <h2 class="section-title">Detalles de la noche</h2>
+  <div class="section-line"></div>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="info-card-icon">📍</div>
+      <div class="info-card-title">Lugar</div>
+      <div class="info-card-highlight">Salón Aurora <!-- [Nombre del Salón] --></div>
+      <div class="info-card-text"> Av. del Ejemplo 1234, Ciudad<!-- [Dirección completa] --><br> <a class="btn-secondary" href="#" target="_blank">Ver en Google Maps</a> <!-- [Descripción de la fachada] --></div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-icon">🕘</div>
+      <div class="info-card-title">Horario</div>
+      <div class="info-card-highlight">21:00hs (nueve de la noche) <!-- [Horario] --></div>
+      <div class="info-card-text">El ingreso comienza a una hora en especifico. Trata de ser puntual, te vamos a estar esperando.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-icon">🎭</div>
+      <div class="info-card-title">Código de vestimenta</div>
+      <div class="info-card-highlight">Disfraz obligatorio</div>
+      <div class="info-card-text">Si no venis disfrazado no entras. Sea lo que sea — ¡Media pila! Va a haber premio al mejor disfraz.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-icon">🍾</div>
+      <div class="info-card-title">Bebidas & Catering</div>
+      <div class="info-card-highlight">Lo ideal es traer tu bebida favorita</div>
+      <div class="info-card-text">No te olvides de traer tu bebida favorita para disfrutar de la noche juntos, nosotros nos encargamos del resto. La comida corre por nuestra cuenta pero la sed por la tuya.</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-icon">📸</div>
+      <div class="info-card-title">Fotógrafo</div>
+      <div class="info-card-highlight">Usa tu celular</div>
+      <div class="info-card-text">Queremos que cada uno de ustedes sea fotografo esta noche, suban las fotos aca y el dia siguiente apareceran todas abajo. La idea es hacer el mejor álbum de la noche.</div>
+    </div>
+  </div>
+  <div class="info-advertencia">
+    <div class="info-advertencia-icon">⚠️</div>
+    <div class="info-advertencia-body">
+      <div class="info-advertencia-title">Disfraces prohibidos</div>
+      <div class="info-advertencia-highlight">Como en todo evento especial — acá hay un anfitrión con disfraz reservado.</div>
+      <div class="info-advertencia-list">
+        <span> + La Parca / Muerte con guadaña </span>
+        <span> + Doctor loco </span>
+        <span> + Zombies basicos </span>
+        <span> + Calaveras </span>
+      </div>
+      <div class="info-advertencia-nota">¿Dudás si tu disfraz entra en la lista? Consultá antes al confirmar tu asistencia.</div>
+    </div>
+  </div>
+    <div class="info-recomendaciones">
+    <p class="info-rec-titulo">✦ Recomendaciones generales ✦</p>
+    <ul class="info-rec-lista">
+      <li>Llegá en horario — la fiesta no va a ser lo mismo si llegás tarde</li>
+      <li>El disfraz es obligatorio, pero también es una oportunidad — no lo desperdicies</li>
+      <li>Cargá el celular antes de venir — vas a querer sacar fotos</li>
+      <li>Si quieren dejarme un regalo, aunque no sea necesario, toda donacion siempre es bienvenida: 
+        <a href="#" target="_blank" class="alias-btn">
+          💳 tu.alias.mp
+        </a> </li>
+    </ul>
+    </div>
+  <div class="info-recomendaciones">
+    <p class="info-rec-titulo">✦ Para que los jovenes adultos disfruten de la noche ✦</p>
+    <ul class="info-rec-lista">
+      <li>Traé efectivo o transferencia para lo que necesites en el camino</li>
+      <li>Si venís en auto, coordiná con alguien — Sale mas barato y ahorra un mal viaje</li>
+      <li>Si no conocés a mucha gente, no importa — esa es la magia de los disfraces</li>
+      <li>Muchos otros detalles los hablamos por privado de hacer falta</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ── RSVP ── -->
+<section class="fade-in" style="padding-top:0">
+  <span class="section-tag">¿Venís?</span>
+  <h2 class="section-title">Confirmá tu asistencia</h2>
+  <div class="section-line"></div>
+
+  <div id="rsvp-section">
+    <div id="rsvp-form-wrap">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Nombre completo *</label>
+          <input type="text" class="form-input" id="rsvp-name" placeholder="Tu nombre">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Teléfono / WhatsApp (*opcional*)</label>
+          <input type="tel" class="form-input" id="rsvp-tel" placeholder="+54 ...">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="rsvp-email" placeholder="tu@mail.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">¿Venís? *</label>
+          <select class="form-select" id="rsvp-attend">
+            <option value="">— Seleccioná —</option>
+            <option value="si">✅ ¡Sí, voy!</option>
+            <option value="no">❌ No puedo ir</option>
+            <option value="tal_vez">⏳ Tal vez (entonces no mandes tu confirmacion aun)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" id="disfraz-group">
+        <label class="form-label">Tiene mas sorpresa si no avisas, pero si tenes dudas respecto a tu disfraz, ¿De que te vas a disfrazar?</label>
+        <input type="text" class="form-input" id="rsvp-costume" placeholder="Ej: pirata, superhéroe, personaje de los 90s...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Restricciones alimentarias (*opcional*)</label>
+        <input type="text" class="form-input" id="rsvp-food" placeholder="Vegano, celíaco, sin lactosa... (opcional)">
+      </div> 
+      <div class="form-group">
+        <label class="form-label">Mensaje para Tomas 🎂 (Si quieren, pueden dejar recomendaciones, la idea es que sea algo especial para todos)</label>
+        <textarea class="form-textarea" id="rsvp-msg" rows="3" placeholder="Dejale un mensaje de cumpleaños..."></textarea>
+      </div>
+      <button class="btn-primary" onclick="submitRSVP()" style="width:100%;text-align:center;justify-content:center">Confirmar asistencia</button>
+    </div>
+
+    <div class="rsvp-success" id="rsvp-success">
+      <div class="rsvp-success-icon">🌑</div>
+      <h3>¡Perfecto, te esperamos!</h3>
+      <p style="color:var(--text-muted);margin-top:0.5rem">Tu confirmación fue enviada. <span id="success-name"></span></p>
+    </div>
+  </div>
+</section>
+
+<!--  ── MÚSICA ── 
+<section id="music-section" class="fade-in">
+  <span class="section-tag">Para el DJ</span>
+  <h2 class="section-title">Pedí tu canción</h2>
+  <div class="section-line"></div>
+
+  <div class="music-container">
+    <div class="music-tabs">
+      <button class="music-tab active" onclick="switchMusicTab(this,'search-panel')">🔍 Buscar</button>
+      <button class="music-tab" onclick="switchMusicTab(this,'queue-panel')">🎵 Cola (<span id="queue-count">0</span>)</button>
+      <button class="music-tab" onclick="switchMusicTab(this,'karaoke-panel')">🎤 Karaoke</button>
+    </div>
+
+    <div class="music-panel active" id="search-panel">
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.5rem">Buscá cualquier canción y agregala a la cola del DJ. También podés pedir para el karaoke.</p>
+      <div class="search-bar">
+        <input type="text" id="music-search-input" placeholder="Artista, canción, género..." onkeydown="if(event.key==='Enter')searchSongs()">
+        <button class="search-btn" onclick="searchSongs()">Buscar</button>
+      </div>
+      <div id="song-list" class="song-list">
+        <p style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:2rem 0">Escribí una canción o artista para buscar 🎶</p>
+      </div>
+    </div>
+
+    <div class="music-panel" id="queue-panel">
+      <div id="queue-list" class="queue-list">
+        <p style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:2rem 0">La cola está vacía. ¡Pedí canciones! 🎵</p>
+      </div>
+      <button class="dj-export-btn" onclick="exportQueueForDJ()">📋 Exportar lista para el DJ</button>
+    </div>
+
+    <div class="music-panel" id="karaoke-panel">
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1.5rem">Anotate para el karaoke. El DJ irá llamando en orden.</p>
+      <div class="form-group" style="margin-bottom:1rem">
+        <label class="form-label">Tu nombre</label>
+        <input type="text" class="form-input" id="karaoke-name" placeholder="¿Quién canta?">
+      </div>
+      <div class="form-group" style="margin-bottom:1rem">
+        <label class="form-label">Canción para cantar</label>
+        <input type="text" class="form-input" id="karaoke-song" placeholder="Nombre de la canción y artista">
+      </div>
+      <button class="btn-primary" onclick="addKaraoke()" style="width:100%;text-align:center">🎤 Anotarme al karaoke</button>
+      <div id="karaoke-list" style="margin-top:1.5rem;display:flex;flex-direction:column;gap:0.5rem"></div>
+    </div>
+  </div>
+</section>
+
+  ── QUIZ ── 
+<section id="quiz-section" class="fade-in">
+  <span class="section-tag">¿Cuánto lo conocés?</span>
+  <h2 class="section-title">Quiz del Cumpleañero</h2>
+  <div class="section-line"></div>
+
+  <div class="quiz-card">
+    <div class="quiz-progress" id="quiz-progress"></div>
+    <div id="quiz-content">
+      <p class="quiz-q" id="quiz-question"></p>
+      <div class="quiz-options" id="quiz-options"></div>
+      <button class="btn-primary" onclick="nextQuestion()" id="quiz-next" style="display:none">Siguiente →</button>
+    </div>
+    <div class="quiz-result" id="quiz-result">
+      <p style="font-size:0.8rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:0.5rem">Tu puntaje</p>
+      <div class="quiz-score" id="quiz-score">0/0</div>
+      <p style="color:var(--text-muted);margin-top:1rem;font-size:0.9rem" id="quiz-verdict"></p>
+      <button class="btn-primary" onclick="restartQuiz()" style="margin-top:1.5rem">Jugar de nuevo</button>
+    </div>
+  </div>
+</section>
+-->
+<!-- ── JUEGOS (fotos, ruleta, karaoke) ── -->
+
+<section id="juegos-section" class="fade-in">
+  <span id="fotos-section"></span><span id="ruleta-section"></span>
+  <span class="section-tag">Durante la fiesta</span>
+  <h2 class="section-title">Juegos de la noche</h2>
+  <div class="section-line"></div>
+  <p class="sectionjuegos-text" >Deslizá para ver todo →</p>
+
+<div class="juegos-track" id="juegos-track">
+    <div class="juegos-inner" id="juegos-inner">
+
+      <a href="fotos.html" class="juego-card" draggable="false">
+        <span class="juego-emoji">📷</span>
+        <span class="juego-title">Galería de la fiesta</span>
+        <span class="juego-text">Mirá las fotos de la noche y votá tus favoritas.</span>
+        <span class="juego-btn">Ver galería →</span>
+        <!-- 🔒 CANDADO: borrá o comentá la línea de abajo para quitar el aviso -->
+        <span class="juego-lock">🔒 La subida de fotos se habilita el día de la fiesta</span>
+      </a>
+
+      <a href="ruleta.html" class="juego-card" draggable="false">
+        <span class="juego-emoji">🎡</span>
+        <span class="juego-title">Ruleta de desafíos</span>
+        <span class="juego-text">Participá en los retos de la noche y disfruta de los retos.</span>
+        <span class="juego-btn">Jugar →</span>
+        <!-- 🔒 CANDADO: borrá o comentá la línea de abajo para quitar el aviso -->
+        <span class="juego-lock">🔒 La ruleta se habilita el día de la fiesta</span>
+      </a>
+
+      <a href="karaoke.html" class="juego-card" draggable="false">
+        <span class="juego-emoji">🎤</span>
+        <span class="juego-title">Karaoke</span>
+        <span class="juego-text">Anotá tu canción y mirala en la pantalla en vivo.</span>
+        <span class="juego-btn">Anotarme →</span>
+        <!-- 🔒 CANDADO: borrá o comentá la línea de abajo para quitar el aviso -->
+        <span class="juego-lock">🔒 El karaoke se habilita el día de la fiesta</span>
+      </a>
+
+      <div class="juego-wrap locked">
+        <!-- 🔒 CANDADO: para habilitar el muro, borrá la palabra "locked" de la línea de arriba (o borrá este bloque "juego-overlay") -->
+        <div class="juego-overlay">
+          <div class="juego-overlay-icon">🔒</div>
+          <div class="juego-overlay-title">Muro bloqueado</div>
+          <div class="juego-overlay-text">Se habilita dos dias antes de la fiesta</div>
+        </div>
+        <!-- 🔒 CANDADO: borrá o comentá la línea de abajo para quitar el aviso -->
+        <a href="confesiones.html" class="juego-card" draggable="false">
+          <span class="juego-emoji">🤫</span>
+          <span class="juego-title">Muro de confesiones</span>
+          <span class="juego-text">Escribí un secreto anónimo y mirá cómo aparece en la pantalla.</span>
+          <span class="juego-btn">Confesar →</span>
+        </a>
+      </div>
+      
+
+    </div>
+  </div>
+  </section>
+<!--
+<section id="fotos-section" class="fade-in">
+  <span class="section-tag">Galería</span>
+  <h2 class="section-title">Fotos de la noche</h2>
+  <div class="section-line"></div>
+  <p class="sectionfoto-text">Subí tus fotos de la fiesta y completemos la galeria.</p>
+
+  
+  <a href="fotos.html" class="foto-card">
+    <span class="foto-card-emoji">📷</span>
+    <span class="foto-card-title">Galería de la fiesta</span>
+    <span class="foto-card-text">Mirá las fotos de la noche y votá tus favoritas.</span>
+    <span class="foto-card-btn">Ver galería →</span>
+    🔒 CANDADO: borrá o comentá la línea de abajo para quitar el aviso 
+    <span class="foto-lock">🔒 La subida de fotos se habilita el día de la fiesta</span>
+  </a>
+</section>
+
+  ── RULETA ── 
+
+<section id="ruleta-section" class="fade-in">
+  <span class="section-tag">Ruleta</span>
+  <h2 class="section-title">Para los retos de la noche</h2>
+  <div class="section-line"></div>
+  <p class="sectionfoto-text">Participá en los retos de la noche y ganá premios.</p>
+
+  <a href="ruleta.html" class="foto-card">
+    <span class="foto-card-emoji">🎡</span>
+    <span class="foto-card-title">Ruleta de la fiesta</span>
+    <span class="foto-card-text">Participá en los retos de la noche y ganá premios.</span>
+    <span class="foto-card-btn">Jugar →</span>
+    🔒 CANDADO: borrá o comentá la línea de abajo para quitar el aviso 
+    <span class="foto-lock">🔒 La ruleta se habilita el día de la fiesta</span>
+  </a>
+</section>
+
+── CONSTRUCCION ── -->
+
+<section class="build">
+  <div class="build-div">
+    <p class="build-title">🔒</p>
+    <p class="build-p1">Sección en construcción</p>
+    <p class="build-p2">
+      Los diferentes juegos estan siendo atentidos a detalle<br>
+      se van a desbloquear el día de la fiesta.
+    </p>
+  </div>
+</section> 
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-mask">🎭</div>
+  <p>Con mucho cariño, para <strong style="color:var(--signal)">Cada uno de ustedes</strong> — 18 años</p>
+  <p style="margin-top:0.5rem;font-size:0.7rem;opacity:0.5"> 13 de marzo de 2027 </p>
+</footer>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<!-- ── MODAL FOTO ── -->
+<div class="modal-overlay" id="photo-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('photo-modal')">✕</button>
+    <img id="modal-photo-img" style="width:100%;max-height:70vh;object-fit:contain;" src="" alt="">
+  </div>
+</div>
+
+<!-- ── MODAL DJ EXPORT ── -->
+<div class="modal-overlay" id="dj-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('dj-modal')">✕</button>
+    <h3 style="font-family:'Cinzel Decorative',serif;color:var(--gold);margin-bottom:1.5rem;font-size:1rem">🎧 Lista para el DJ</h3>
+    <div id="dj-export-content" style="font-family:'DM Sans',sans-serif;font-size:0.85rem;line-height:2;color:var(--cream2);white-space:pre-wrap"></div>
+    <button class="btn-primary" onclick="copyDJList()" style="margin-top:1.5rem;width:100%;text-align:center">📋 Copiar al portapapeles</button>
+  </div>
+</div>
+<script src="script.js"></script>
+<div style="position:fixed;left:.6rem;bottom:calc(.6rem + env(safe-area-inset-bottom,0px));z-index:9999;padding:.3rem .7rem;background:rgba(0,0,0,.75);border:1px solid rgba(196,168,130,.35);color:#C4A882;font:400 12px system-ui,sans-serif;pointer-events:none">Versión demo · datos de ejemplo</div>
+</body>
+</html>
