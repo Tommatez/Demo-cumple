@@ -98,26 +98,7 @@ h1 { font-family: 'New Rocker', system-ui; font-size: clamp(2rem, 5vw, 3.5rem); 
 }
 .result.open { display: flex; animation: fade 0.4s ease; }
 
-.upload-lock {
-  position: absolute;
-  inset: 0;        /* ← sacás el "0 2rem", que dejaba huecos */
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background: rgba(4,6,15,0.88);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px dashed rgba(196,168,130,0.35);
-  text-align: center;
-  padding: 1.5rem;
-  cursor: not-allowed;
-}
-.upload-lock-icon { font-size: 2.5rem; }
-.upload-lock-title { font-family: 'New Rocker', system-ui; font-size: 1.1rem; color: var(--star); letter-spacing: 0.05em; }
-.upload-lock-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
 
 .numero-wrap {
   width: 100%;
@@ -238,14 +219,6 @@ h1 { font-family: 'New Rocker', system-ui; font-size: clamp(2rem, 5vw, 3.5rem); 
 <main>
   <span class="tag">Atrevete si podés</span>
   <h1>Ruleta de desafíos</h1>
-
-      <!-- ===== 🔒 CANDADO: borrá o comentá desde acá hasta "FIN CANDADO" para habilitar la subida ===== --> 
-    <div class="upload-lock" id="upload-lock">
-      <div class="upload-lock-icon">🔒</div>
-      <div class="upload-lock-title">Giro bloqueado</div>
-      <div class="upload-lock-text">Se habilita el día de la fiesta.<br>Mientras tanto podés ver la interfaz.</div>
-    </div>
-      <!--  ===== FIN CANDADO ===== --> 
 
   <div class="numero-wrap">
   <p class="numero-label">✦ Número de la suerte ✦</p>
