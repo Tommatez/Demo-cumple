@@ -1,7 +1,7 @@
 // ─── CONFIG ───────────────────────────────────────────────────────
 // ⚡ PERSONALIZAR ESTAS VARIABLES:
-const PARTY_DATE = new Date('2026-12-05T21:00:00'); // ← Cambiá la fecha
-const BIRTHDAY_NAME = '[NOMBRE]'; // ← Cambiá el nombre
+const PARTY_DATE = new Date('2027-03-13T21:00:00'); // ← Cambiá la fecha
+const BIRTHDAY_NAME = 'Ejemplo'; // ← Cambiá el nombre
 const DJ_EMAIL = 'dj@placeholder.com'; // ← Email del DJ
 const RSVP_EMAIL = 'tomasezequielcirulli@gmail.com'; // ← Email del cumpleañero
 
