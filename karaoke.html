@@ -66,15 +66,7 @@ body.host .now-actions { display: block; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn.small { font-family: 'Jost', sans-serif; font-size: 0.8rem; padding: 0.6rem 1.2rem; letter-spacing: 0.1em; text-transform: uppercase; }
 
-/* Candado (borrá este bloque CSS y el bloque HTML del candado para habilitar anotarse) */
-.signup-lock {
-  position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem;
-  background: rgba(4,6,15,0.85); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-  border: 1px dashed rgba(196,168,130,0.35); text-align: center; padding: 1rem; cursor: not-allowed;
-}
-.signup-lock-icon { font-size: 2.2rem; }
-.signup-lock-title { font-family: 'New Rocker', system-ui; font-size: 1.1rem; color: var(--star); }
-.signup-lock-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
 
 /* Cola */
 .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.75rem; }
@@ -159,13 +151,7 @@ body.tv .now-actions { display: none !important; }
   <div class="now" id="now"></div>
 
   <div class="signup-wrap">
-    <!-- ===== 🔒 CANDADO: borrá o comentá desde acá hasta "FIN CANDADO" para habilitar anotarse ===== --> 
-    <div class="signup-lock" id="signup-lock">
-      <div class="signup-lock-icon">🔒</div>
-      <div class="signup-lock-title">Anotarse está bloqueado</div>
-      <div class="signup-lock-text">Se habilita el día de la fiesta.</div>
-    </div>
-    <!-- ===== FIN CANDADO ===== --> 
+
     <div class="signup">
       <div>
         <label for="in-name">Tu nombre</label>
